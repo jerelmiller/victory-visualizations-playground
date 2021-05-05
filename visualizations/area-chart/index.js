@@ -1,78 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Radar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-} from 'recharts';
-import {
+  AutoSizer,
   Card,
   CardBody,
   HeadingText,
   NrqlQuery,
   Spinner,
-  AutoSizer,
 } from 'nr1';
+import { VictoryChart, VictoryArea } from 'victory';
 
 export default class AreaChartVisualization extends React.Component {
-  // Custom props you wish to be configurable in the UI must also be defined in
-  // the nr1.json file for the visualization. See docs for more details.
   static propTypes = {
-    /**
-     * A fill color to override the default fill color. This is an example of
-     * a custom chart configuration.
-     */
-    fill: PropTypes.string,
-
-    /**
-     * A stroke color to override the default stroke color. This is an example of
-     * a custom chart configuration.
-     */
-    stroke: PropTypes.string,
-    /**
-     * An array of objects consisting of a nrql `query` and `accountId`.
-     * This should be a standard prop for any NRQL based visualizations.
-     */
-    nrqlQueries: PropTypes.arrayOf(
-      PropTypes.shape({
-        accountId: PropTypes.number,
-        query: PropTypes.string,
-      })
-    ),
-  };
-
-  /**
-   * Restructure the data for a non-time-series, facet-based NRQL query into a
-   * form accepted by the Recharts library's RadarChart.
-   * (https://recharts.org/api/RadarChart).
-   */
-  transformData = (rawData) => {
-    return rawData.map((entry) => ({
-      name: entry.metadata.name,
-      // Only grabbing the first data value because this is not time-series data.
-      value: entry.data[0].y,
-    }));
-  };
-
-  /**
-   * Format the given axis tick's numeric value into a string for display.
-   */
-  formatTick = (value) => {
-    return value.toLocaleString();
+    query: PropTypes.string,
+    accountId: PropTypes.number,
   };
 
   render() {
-    const { nrqlQueries, stroke, fill } = this.props;
+    const { query, accountId } = this.props;
 
-    const nrqlQueryPropsAvailable =
-      nrqlQueries &&
-      nrqlQueries[0] &&
-      nrqlQueries[0].accountId &&
-      nrqlQueries[0].query;
-
-    if (!nrqlQueryPropsAvailable) {
+    if (!query || !accountId) {
       return <EmptyState />;
     }
 
@@ -80,8 +27,8 @@ export default class AreaChartVisualization extends React.Component {
       <AutoSizer>
         {({ width, height }) => (
           <NrqlQuery
-            query={nrqlQueries[0].query}
-            accountId={parseInt(nrqlQueries[0].accountId)}
+            query={query}
+            accountId={accountId}
             pollInterval={NrqlQuery.AUTO_POLL_INTERVAL}
           >
             {({ data, loading, error }) => {
@@ -93,24 +40,17 @@ export default class AreaChartVisualization extends React.Component {
                 return <ErrorState />;
               }
 
-              const transformedData = this.transformData(data);
+              const transformedData = data[0].data.map((point) => ({
+                ...point,
+                x: new Date(point.x).toISOString(),
+              }));
 
               return (
-                <RadarChart
-                  width={width}
-                  height={height}
-                  data={transformedData}
-                >
-                  <PolarGrid />
-                  <PolarAngleAxis dataKey="name" />
-                  <PolarRadiusAxis tickFormatter={this.formatTick} />
-                  <Radar
-                    dataKey="value"
-                    stroke={stroke || '#51C9B7'}
-                    fill={fill || '#51C9B7'}
-                    fillOpacity={0.6}
-                  />
-                </RadarChart>
+                <div style={{ whiteSpace: 'pre', fontFamily: 'monospace' }}>
+                  <VictoryChart height={height} width={width}>
+                    <VictoryArea data={transformedData} />
+                  </VictoryChart>
+                </div>
               );
             }}
           </NrqlQuery>
