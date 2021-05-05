@@ -1,23 +1,26 @@
 {
-    "private": true,
-    "name": "victory-visualizations-playground",
-    "version": "1.0.0",
-    "scripts": {
-        "start": "nr1 nerdpack:serve",
-        "test": "exit 0"
-    },
-    "nr1": {
-        "uuid": "5e37a826-8663-4556-9f06-b6082be681f3"
-    },
-    "dependencies": {
-        "prop-types": "^15.6.2",
-        "react": "^16.6.3",
-        "react-dom": "^16.6.3",
-        "recharts": "^2.0.9"
-    },
-    "browserslist": [
-        "last 2 versions",
-        "not ie < 11",
-        "not dead"
-    ]
+  "private": true,
+  "name": "victory-visualizations-playground",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "nr1 nerdpack:serve",
+    "test": "exit 0"
+  },
+  "nr1": {
+    "uuid": "5e37a826-8663-4556-9f06-b6082be681f3"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.2",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "recharts": "^2.0.9"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "not ie < 11",
+    "not dead"
+  ],
+  "devDependencies": {
+    "prettier": "^2.2.1"
+  }
 }
