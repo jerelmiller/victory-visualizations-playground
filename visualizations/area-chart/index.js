@@ -8,7 +8,8 @@ import {
   NrqlQuery,
   Spinner,
 } from 'nr1';
-import { VictoryChart, VictoryArea } from 'victory';
+import { VictoryGroup, VictoryChart, VictoryArea, VictoryAxis } from 'victory';
+import { format } from 'date-fns';
 import theme from '../../src/theme';
 
 export default class AreaChartVisualization extends React.Component {
@@ -42,8 +43,26 @@ export default class AreaChartVisualization extends React.Component {
               }
 
               return (
-                <VictoryChart height={height} width={width} theme={theme}>
-                  <VictoryArea data={data[0].data} />
+                <VictoryChart
+                  height={height}
+                  width={width}
+                  theme={theme}
+                  scale={{ x: 'time' }}
+                >
+                  <VictoryGroup>
+                    <VictoryArea data={data[0].data} />
+                    <VictoryArea
+                      data={data[0].data.map((point) => ({
+                        ...point,
+                        y: point.y / 2,
+                      }))}
+                    />
+                  </VictoryGroup>
+                  <VictoryAxis
+                    tickCount={10}
+                    tickFormat={(date) => format(date, 'hh:mm aa')}
+                  />
+                  <VictoryAxis dependentAxis />
                 </VictoryChart>
               );
             }}
