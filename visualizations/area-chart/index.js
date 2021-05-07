@@ -12,6 +12,16 @@ import { VictoryGroup, VictoryChart, VictoryArea, VictoryAxis } from 'victory';
 import { format } from 'date-fns';
 import theme from '../../src/theme';
 
+const sortByAverage = (a, b) => {
+  const aTotal = a.data.reduce((count, point) => count + point.y, 0);
+  const bTotal = b.data.reduce((count, point) => count + point.y, 0);
+
+  const aAverage = aTotal / a.data.length;
+  const bAverage = bTotal / b.data.length;
+
+  return bAverage - aAverage;
+};
+
 export default class AreaChartVisualization extends React.Component {
   static propTypes = {
     query: PropTypes.string,
@@ -49,15 +59,14 @@ export default class AreaChartVisualization extends React.Component {
                   theme={theme}
                   scale={{ x: 'time' }}
                 >
-                  <VictoryGroup>
-                    <VictoryArea data={data[0].data} />
+                  {data.sort(sortByAverage).map(({ data, metadata }) => (
                     <VictoryArea
-                      data={data[0].data.map((point) => ({
-                        ...point,
-                        y: point.y / 2,
-                      }))}
+                      key={metadata.id}
+                      name={metadata.name}
+                      data={data}
+                      style={{ data: { fill: metadata.color } }}
                     />
-                  </VictoryGroup>
+                  ))}
                   <VictoryAxis
                     tickCount={10}
                     tickFormat={(date) => format(date, 'hh:mm aa')}
