@@ -9,6 +9,7 @@ import {
   Spinner,
 } from 'nr1';
 import { VictoryChart, VictoryArea } from 'victory';
+import theme from '../../src/theme';
 
 export default class AreaChartVisualization extends React.Component {
   static propTypes = {
@@ -40,17 +41,10 @@ export default class AreaChartVisualization extends React.Component {
                 return <ErrorState />;
               }
 
-              const transformedData = data[0].data.map((point) => ({
-                ...point,
-                x: new Date(point.x).toISOString(),
-              }));
-
               return (
-                <div style={{ whiteSpace: 'pre', fontFamily: 'monospace' }}>
-                  <VictoryChart height={height} width={width}>
-                    <VictoryArea data={transformedData} />
-                  </VictoryChart>
-                </div>
+                <VictoryChart height={height} width={width} theme={theme}>
+                  <VictoryArea data={data[0].data} />
+                </VictoryChart>
               );
             }}
           </NrqlQuery>
